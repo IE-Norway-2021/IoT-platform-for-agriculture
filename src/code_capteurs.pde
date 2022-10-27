@@ -36,54 +36,60 @@
 #include <WaspUSB.h> 
 
 char moteID[] = "A2";
-bool error = 0;
-uint8_t socket = SOCKET0;
-char APP_KEY[] = "000102030405060708090A0B0C0D0E0F";
-char APP_EUI[] = "000102030405060708090A0B0C0D0E0F";
 
-void setup()
+uint8_t socket = SOCKET0;
+
+char DEVICE_EUI[]  = "70B3D57ED0056E9F";
+char APP_EUI[] = "1702199819021998";
+char APP_KEY[] = "7609D24626A9EBD095AF3C736E74263B";
+
+uint8_t error, PORT;
+
+
+
+void setup() 
 {
   // put your setup code here, to run once:
   USB.ON();
 
+  error = LoRaWAN.ON(socket);
   error = LoRaWAN.factoryReset();
   error = LoRaWAN.setDataRate(5);
+  error = LoRaWAN.setDeviceEUI(DEVICE_EUI);
   error = LoRaWAN.setAppEUI(APP_EUI);
   error = LoRaWAN.setAppKey(APP_KEY);
   error = LoRaWAN.joinOTAA();
+  error = LoRaWAN.saveConfig();
   error = LoRaWAN.OFF(socket);
 
   if (error == 0) {
     USB.println("No error");
+  } else {
+    USB.println("Error During setup");
   }
 
   frame.setID(moteID);
 
   Agriculture.ON();
 
+  USB.println("Setup done, starting loop");
 }
 
-float temp, humd, pres;
-float soil_tmp, watermarkA, watermarkB, watermarkC, watermarkD, watermarkE, watermarkF;
+float temp, humd, pres, soil_temp, watermark;
 pt1000Class pt1000Sensor;
-watermarkClass wmSensorA(SOCKET_A);
-watermarkClass wmSensorB(SOCKET_B);
-watermarkClass wmSensorC(SOCKET_C);
-watermarkClass wmSensorD(SOCKET_D);
-watermarkClass wmSensorE(SOCKET_E);
-watermarkClass wmSensorF(SOCKET_F);
+watermarkClass wmSensor(SOCKET_C);
 
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
+  // Read Sensors value
   temp = Agriculture.getTemperature();
   humd = Agriculture.getHumidity();
   pres = Agriculture.getPressure();
-  soil_tmp = pt1000Sensor.readPT1000();
-  watermarkA = wmSensorA.readWatermark();
-  watermarkB = wmSensorB.readWatermark();
+  soil_temp = pt1000Sensor.readPT1000();
+  watermark = wmSensor.readWatermark();
 
+  // Print sensors value
   USB.print(F("Temperature = "));
   USB.print(temp);
   USB.println(F("C"));
@@ -94,28 +100,76 @@ void loop()
   USB.print(pres);
   USB.println(F(" PA"));
   USB.print(F("Soil temp = "));
-  USB.printFloat(soil_tmp,3);
+  USB.printFloat(soil_temp,3);
   USB.println(F(" Celsius"));
-  USB.print(F("Watermark A - Frequency = "));
-  USB.print(watermarkA);
+  USB.print(F("Watermark - Frequency = "));
+  USB.print(watermark);
   USB.println(F(" Hz"));
-  USB.print(F("Watermark B - Frequency = "));
-  USB.print(watermarkB);
-  USB.println(F(" Hz"));
-  USB.println(F("Watermark C - Frequency = "));
-  USB.print(watermarkC);
-  USB.println(F(" Hz"));
-  USB.println(F("Watermark D - Frequency = "));
-  USB.print(watermarkD);
-  USB.println(F(" Hz"));
-  USB.println(F("Watermark E - Frequency = "));
-  USB.print(watermarkE);
-  USB.println(F(" Hz"));
-  USB.println(F("Watermark F - Frequency = "));
-  USB.print(watermarkF);
-  USB.println(F(" Hz"));
-  
 
-  delay(2000);
+  // Create a new frame
+  USB.println(F("Creating a new frame"));
 
+  // Create new frame ASCII
+  frame.createFrame(ASCII);
+
+  // set frame fields
+  frame.addSensor(SENSOR_BAT, PWR.getBatteryLevel());
+  frame.addSensor(SENSOR_AGR_SOIL1, watermark);
+  frame.addSensor(SENSOR_AGR_SOILTC, soil_temp);
+  frame.addSensor(SENSOR_AGR_TC, temp);
+  frame.addSensor(SENSOR_AGR_HUM,humd);  
+  frame.addSensor(SENSOR_AGR_PRES, pres);
+
+
+  // Print frame
+  frame.showFrame();
+
+
+  // Switch on
+  error = LoRaWAN.ON(socket);
+
+  // Check status
+  if (error != 0) {
+    USB.print(F("Switch ON error = "));
+    USB.println(error, DEC);
+    PWR.reboot();
+  }
+
+  // Join network
+
+  error = LoRaWAN.joinABP();
+
+
+  // Check status
+  if (error == 0) {
+    USB.println(F("Join network OK"));
+
+    // send un-confirmed packet
+    error = LoRaWAN.sendUnconfirmed(PORT, frame.buffer, frame.length);
+
+
+    if (error == 0) {
+      USB.println(F("Send unconfirmed packet OK"));
+
+      if (LoRaWAN._dataReceived == true) {
+        USB.print(F("Data on port number"));
+        USB.println(LoRaWAN._port, DEC);
+        USB.println(F("Join network OK"));
+
+      }
+
+    }
+  }
+
+  // Switch off
+  error = LoRaWAN.OFF(socket);
+
+  if (error != 0) {
+    USB.print(F("Switch OFF error = "));
+    USB.println(error, DEC);
+    PWR.reboot();
+  }
+
+
+  delay(5000);
 }
