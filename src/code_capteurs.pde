@@ -1,3 +1,5 @@
+#include <CayenneLPP.h>
+
 #include <WaspSensorAmbient.h>
 
 #include <WaspSensorAgr_v30.h>
@@ -33,7 +35,7 @@
 
 // Put your libraries here (#include ...)
 #include <WaspLoRaWAN.h>
-#include <WaspUSB.h> 
+#include <WaspUSB.h>
 
 char moteID[] = "A2";
 
@@ -43,7 +45,8 @@ char DEVICE_EUI[]  = "70B3D57ED0056E9F";
 char APP_EUI[] = "1702199819021998";
 char APP_KEY[] = "7609D24626A9EBD095AF3C736E74263B";
 
-uint8_t error, PORT;
+uint8_t error;
+uint8_t PORT = 3;
 
 
 
@@ -153,12 +156,21 @@ void loop()
 
       if (LoRaWAN._dataReceived == true) {
         USB.print(F("Data on port number"));
-        USB.println(LoRaWAN._port, DEC);
-        USB.println(F("Join network OK"));
+        USB.print(LoRaWAN._port, DEC);
+        USB.print(F(".\r\n Data: "));
+        USB.println(LoRaWAN._data);
 
       }
 
+    } else {
+      USB.print(F("Send unconfirmed packet error = "));
+      USB.println(error, DEC);
+      PWR.reboot();
     }
+  } else {
+    USB.print(F("Join network error = "));
+    USB.println(error, DEC);
+    PWR.reboot();
   }
 
   // Switch off
