@@ -9,6 +9,7 @@ Jade Gröli & David González León
 - [3. Sensors](#3-sensors)
 - [4. Development Steps](#4-development-steps)
   - [4.1. Plug and Sense](#41-plug-and-sense)
+    - [4.1.1. Documentation](#411-documentation)
   - [4.2. The Thing Network](#42-the-thing-network)
   - [4.3. Azure](#43-azure)
     - [4.3.1. Azure functions](#431-azure-functions)
@@ -44,17 +45,15 @@ A project that creates a smart agriculture platform based on the Libelium Plug a
 
 # 4. Development Steps
 
-
 ## 4.1. Plug and Sense
 
 Create the code for the Plug and Sense module to gather data from the sensors and send them to The Thing Network.
 
-### Documentation 
+### 4.1.1. Documentation
 
 Code example : https://development.libelium.com/plug-and-sense/code-examples
 
 Sensors sockets map : https://development.libelium.com/plug-and-sense-technical-guide/models
-
 
 ## 4.2. The Thing Network
 
