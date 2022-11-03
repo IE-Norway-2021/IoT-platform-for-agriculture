@@ -1,5 +1,3 @@
-#include <CayenneLPP.h>
-
 #include <WaspSensorAmbient.h>
 
 #include <WaspSensorAgr_v30.h>
