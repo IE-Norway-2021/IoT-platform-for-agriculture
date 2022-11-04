@@ -1,10 +1,12 @@
 {
+    "waspMoteId": "42",
     "batteryLevel": "30",
-    "humidity": "-1000.0",
     "messageNumber": "1",
-    "pressure": "-1000.00",
     "temperatureAir": "-1000.00",
+    "humidity": "-1000.0",
+    "pressure": "-1000.00",
     "temperatureSoil": "5684.82",
+    "watermark": "0.00",
     "time": {
         "": {
             "": null,
@@ -13,7 +15,5 @@
         },
         "int64": 63803061606,
         "uint64": 945000000
-    },
-    "waspMoteId": "A2",
-    "watermark": "0.00"
+    }
 }

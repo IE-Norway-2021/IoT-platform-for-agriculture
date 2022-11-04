@@ -35,7 +35,7 @@
 #include <WaspLoRaWAN.h>
 #include <WaspUSB.h>
 
-char moteID[] = "A2";
+char moteID[] = "42";
 
 uint8_t socket = SOCKET0;
 
