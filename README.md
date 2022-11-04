@@ -74,12 +74,38 @@ Once this is done, we receive the messages from the Plug and Sense module on The
 
 ### 4.3.1. Azure functions
 
+We created a function in Azure that receives the payloads from The Thing Network through a http trigger we and inserts the data into the InfluxDB database. The function is written in python using version 3.9. We first developed the function locally and tested it on a local InfluxDB database. Once we were sure it worked, we deployed it to Azure.
+
 ### 4.3.2. InfluxDB Azure
 
-Pour tester, on a utilisé une base de donnée locale d'abord, avec docker :
+To test the function, we used a local InfluxDB database. We used the following docker command to start the database :
 
 ```bash
-docker run -p 8086:8086 -v influxdb:/var/lib/influxdb influxdb --name influxdb
+docker run -p 8086:8086 --name influxdb -v influxdb:/var/lib/influxdb influxdb
 ```
+
+Once the database was running, we set up the database and created a bucket for our data. We then created a token to allow our function to write to the database. We then tested the function locally writing data in the following format :
+
+```json
+[
+    {
+        "measurement": "iot_data2",
+        "fields": {
+            "waspmote_id": 42,
+            "watermark": 0.0,
+            "humidity": -1000.0,
+            "pressure": -1000.0,
+            "temperatureAir": -1000.0,
+            "temperatureSoil": 5684.82,
+            "batteryLevel": 30.0,
+            "messageNumber": 1.0
+        }
+    }
+]
+```
+
+We then tested using the web interface of the database to check if the data was correctly inserted.
+
+Once everything was working, we deployed the influxdb to Azure ...
 
 ### 4.3.3. Azure Managed Graphana
