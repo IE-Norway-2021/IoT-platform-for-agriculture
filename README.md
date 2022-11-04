@@ -79,7 +79,7 @@ Once this is done, we receive the messages from the Plug and Sense module on The
 Pour tester, on a utilisé une base de donnée locale d'abord, avec docker :
 
 ```bash
-docker run -p 8086:8086 -v influxdb:/var/lib/influxdb influxdb
+docker run -p 8086:8086 -v influxdb:/var/lib/influxdb influxdb --name influxdb
 ```
 
 ### 4.3.3. Azure Managed Graphana
