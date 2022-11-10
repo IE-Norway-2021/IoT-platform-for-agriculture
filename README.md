@@ -15,7 +15,7 @@ Jade Gröli & David González León
     - [4.3.1. Azure functions](#431-azure-functions)
     - [4.3.2. InfluxDB Azure](#432-influxdb-azure)
     - [4.3.3. Azure Managed Graphana](#433-azure-managed-graphana)
-    - [Deploying all components to Azure](#deploying-all-components-to-azure)
+    - [4.3.4. Deploying all components to Azure](#434-deploying-all-components-to-azure)
 
 A project that creates a smart agriculture platform based on the Libelium Plug and sense
 
@@ -107,13 +107,15 @@ Once the database was running, we set up the database and created a bucket for o
 
 We then tested using the web interface of the database to check if the data was correctly inserted.
 
-Once everything was working, we deployed the influxdb to Azure ...
-
 ### 4.3.3. Azure Managed Graphana
+
+Once the database was correctly configured, we started working on the Grafana dashboard. We created a new Grafana instance using docker :
 
 ```bash
 docker run -d -p 3000:3000 --name graphana grafana/grafana-enterprise
 ```
+
+To allow Grafana to connect to the influxdb container, we had to create a network for both instances :
 
 ```bash
 docker network create mynet
@@ -121,18 +123,35 @@ docker network connect mynet influxdb
 docker network connect mynet graphana
 ```
 
-### Deploying all components to Azure
+We then added the influxdb datasource to the Grafana instance. We used the following configuration :
 
-Query data from influxdb in Flux :
+![Graphana datasource configuration](./img/grafana_config_1.jpg)
+
+![Graphana datasource configuration](./img/grafana_config_2.jpg)
+
+We had to specifically set the url to the name of the container, as the default "localhost" url was not working.
+
+Once the datasource was configured, we created a new database and started adding panels. We added the following panels :
+
+-   A panel to display the battery level of the mote
+-   A panel to display the temperature of the air and the temperature of the soil
+-   A panel to display the humidity
+-   A panel to display the pressure
+-   A panel to display the watermark
+
+For each panel we queried the data using the following query :
 
 ```flux
-from(bucket: "iot_data")
-  |> range(start: -1h)
-  |> filter(fn: (r) => r._measurement == "iot_data")
-  |> filter(fn: (r) => r._field == "temperatureAir")
-  |> filter(fn: (r) => r.waspmote_id == "42")
+from(bucket: "iot_bucket")
+  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)
+  |> filter(fn: (r) =>
+    r._measurement == "measures_agribots" and
+    r._field == "batteryLevel"
+  )
 ```
 
-```flux
+We adapted the query to get the correct field depending on the panel.
 
-```
+Once all the panels were created, we saved the dashboard and exported it to a json file so that we could easily import it in the future.
+
+### 4.3.4. Deploying all components to Azure
