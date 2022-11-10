@@ -15,6 +15,7 @@ Jade Gröli & David González León
     - [4.3.1. Azure functions](#431-azure-functions)
     - [4.3.2. InfluxDB Azure](#432-influxdb-azure)
     - [4.3.3. Azure Managed Graphana](#433-azure-managed-graphana)
+    - [Deploying all components to Azure](#deploying-all-components-to-azure)
 
 A project that creates a smart agriculture platform based on the Libelium Plug and sense
 
@@ -81,7 +82,7 @@ We created a function in Azure that receives the payloads from The Thing Network
 To test the function, we used a local InfluxDB database. We used the following docker command to start the database :
 
 ```bash
-docker run -p 8086:8086 --name influxdb -v influxdb:/var/lib/influxdb influxdb
+docker run -d -p 8086:8086 --name influxdb -v influxdb:/var/lib/influxdb influxdb
 ```
 
 Once the database was running, we set up the database and created a bucket for our data. We then created a token to allow our function to write to the database. We then tested the function locally writing data in the following format :
@@ -109,3 +110,9 @@ We then tested using the web interface of the database to check if the data was 
 Once everything was working, we deployed the influxdb to Azure ...
 
 ### 4.3.3. Azure Managed Graphana
+
+```bash
+docker run -d -p 3000:3000 --name graphana grafana/grafana-enterprise
+```
+
+### Deploying all components to Azure
