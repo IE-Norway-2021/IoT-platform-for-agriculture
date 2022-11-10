@@ -115,4 +115,24 @@ Once everything was working, we deployed the influxdb to Azure ...
 docker run -d -p 3000:3000 --name graphana grafana/grafana-enterprise
 ```
 
+```bash
+docker network create mynet
+docker network connect mynet influxdb
+docker network connect mynet graphana
+```
+
 ### Deploying all components to Azure
+
+Query data from influxdb in Flux :
+
+```flux
+from(bucket: "iot_data")
+  |> range(start: -1h)
+  |> filter(fn: (r) => r._measurement == "iot_data")
+  |> filter(fn: (r) => r._field == "temperatureAir")
+  |> filter(fn: (r) => r.waspmote_id == "42")
+```
+
+```flux
+
+```

@@ -7,8 +7,8 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 TOKEN = "3mWZAnt8LKLrzGwIwJSVCb1jCGM872fgYWnI687Kb6fedGvMiCwAulnhOvkjR2k4RwCaL9ExoPEFtx2rFGtO9g=="
 URL = "http://localhost:8086"
-ORG = "IoT"
-BUCKET = "AgriBots"
+ORG = "iot_agriculture"
+BUCKET = "iot_bucket"
 MEASUREMENT = "measures_agribots"
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
