@@ -5,8 +5,8 @@ import azure.functions as func
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-TOKEN = "3mWZAnt8LKLrzGwIwJSVCb1jCGM872fgYWnI687Kb6fedGvMiCwAulnhOvkjR2k4RwCaL9ExoPEFtx2rFGtO9g=="
-URL = "http://localhost:8086"
+TOKEN = "fiK19YzSl6EDU7ZwMeO0arHTU9km_5NkPeLK2Oh-Dwqc80aZSuN-f39Dkw_dzhjB_C6FszK_kgLV9u7GLfPRZw=="
+URL = "http://20.203.230.99:8086"
 ORG = "iot_agriculture"
 BUCKET = "iot_bucket"
 MEASUREMENT = "measures_agribots"
@@ -14,25 +14,43 @@ MEASUREMENT = "measures_agribots"
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    waspMoteId = req.params.get('waspMoteId')
-    watermark = req.params.get('watermark')
-    batteryLevel = req.params.get('batteryLevel')
-    humidity = req.params.get('humidity')
-    messageNumber = req.params.get('messageNumber')
-    pressure = req.params.get('pressure')
-    temperatureAir = req.params.get('temperatureAir')
-    temperatureSoil = req.params.get('temperatureSoil')
-    # time = req.params.get('time')
+    # logging.info(req.params)
 
-    if not waspMoteId or not watermark or not batteryLevel or not humidity or not messageNumber or not pressure or not temperatureAir or not temperatureSoil:
-        try:
-            # get json body
-            req_body = req.get_json()
-            if type(req_body) is str:
-                req_body = json.loads(req_body)
-        except ValueError:
-            pass
-        else:
+    # data = req.params.get('data').get('uplink_message').get('decoded_payload')
+    # logging.info(data)
+
+    # waspMoteId = data.get('waspMoteId')
+    # watermark = data.get('watermark')
+    # batteryLevel = data.get('batteryLevel')
+    # humidity = data.get('humidity')
+    # messageNumber = data.get('messageNumber')
+    # pressure = data.get('pressure')
+    # temperatureAir = data.get('temperatureAir')
+    # temperatureSoil = data.get('temperatureSoil')
+    # # time = req.params.get('time')
+
+    # if not waspMoteId or not watermark or not batteryLevel or not humidity or not messageNumber or not pressure or not temperatureAir or not temperatureSoil:
+    try:
+        # get json body
+        req_body = req.get_json()
+        logging.info(req_body)
+        logging.info(type(req_body))
+        if type(req_body) == dict:
+            req_body = str(req_body)
+        # replace all ' by "
+        req_body = req_body.replace("'", '"')
+        # replace None by "None"
+        req_body = req_body.replace("None", '"None"')
+        logging.info(req_body)
+        if type(req_body) is str:
+            req_body = json.loads(req_body)
+        req_body = req_body.get('uplink_message').get('decoded_payload')
+        logging.info(req_body)
+    except ValueError:
+        logging.info("Error: No JSON body found")
+        pass
+    else:
+        if req_body:
             waspMoteId = req_body.get('waspMoteId')
             watermark = req_body.get('watermark')
             batteryLevel = req_body.get('batteryLevel')
@@ -43,7 +61,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             temperatureSoil = req_body.get('temperatureSoil')
             # time = req_body.get('time')
 
-    if waspMoteId and watermark and batteryLevel and humidity and messageNumber and pressure and temperatureAir and temperatureSoil:
+    if req_body and waspMoteId and watermark and batteryLevel and humidity and messageNumber and pressure and temperatureAir and temperatureSoil:
         # structure the new data to prepare the influxdb data insert
         data = [
             {

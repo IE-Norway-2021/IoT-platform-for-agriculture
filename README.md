@@ -155,3 +155,5 @@ We adapted the query to get the correct field depending on the panel.
 Once all the panels were created, we saved the dashboard and exported it to a json file so that we could easily import it in the future.
 
 ### 4.3.4. Deploying all components to Azure
+
+-   Influx DB : container déployé sur Azure (les autres options marchent pas pour nous)
