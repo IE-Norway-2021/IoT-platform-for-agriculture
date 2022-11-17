@@ -287,4 +287,3 @@ Cette estimation est calculé à l'aide de l'outil officel de calcul d'Azure : h
 The repository of the project is available here :
 
 https://github.com/IE-Norway-2021/IoT-platform-for-agriculture.git
-
