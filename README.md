@@ -15,6 +15,8 @@ Jade Gröli & David González León
     - [3.3.2. InfluxDB Azure](#332-influxdb-azure)
     - [3.3.3. Azure Managed Grafana](#333-azure-managed-grafana)
 - [4. Deployment](#4-deployment)
+- [Cost estimation](#cost-estimation)
+- [Repository of the project](#repository-of-the-project)
 
 # 1. Architecture
 
@@ -267,3 +269,22 @@ Nous avons déployé les 3 composants sur Azure :
 Une fois les 3 composants déployés nous avons configuré InfluxDB et Grafana pour qu'ils puissent communiquer ensemble. Nous avons ensuite importé le dashboard que nous avions créé localement dans Grafana.
 
 Nous avons ensuite connecté TheThingNetwork au webhook de notre Azure function. Nous avons ensuite testé le fonctionnement de notre système en connectant le mote Plug and Sense. Nous avons pu voir que les données étaient bien reçues par TheThingNetwork et envoyées à notre Azure function. Nous avons ensuite pu voir que les données étaient bien insérées dans InfluxDB et que le dashboard Grafana était bien mis à jour.
+
+# Cost estimation
+
+Nous avons estimé les coûts du déploiement de la fonction et des instances de containers sur Azure. 
+
+
+![Cost estimation](./img/cost_estimation.png)
+
+La fonction ne coûte rien avant les 1 million d'exécutions. Nous avons estimé avoir 8064 exécutions par mois ce qui nous donne 10 ans avant de dépasser le quota gratuit.
+
+Cette estimation est calculé à l'aide de l'outil officel de calcul d'Azure : https://azure.microsoft.com/en-us/pricing/calculator/
+
+
+# Repository of the project
+
+The repository of the project is available here :
+
+https://github.com/IE-Norway-2021/IoT-platform-for-agriculture.git
+
