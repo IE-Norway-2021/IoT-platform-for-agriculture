@@ -5,8 +5,8 @@ import azure.functions as func
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-TOKEN = "fiK19YzSl6EDU7ZwMeO0arHTU9km_5NkPeLK2Oh-Dwqc80aZSuN-f39Dkw_dzhjB_C6FszK_kgLV9u7GLfPRZw=="
-URL = "http://20.203.230.99:8086"
+TOKEN = "INSERT YOUR TOKEN"
+URL = "INSERT YOUR URL"
 ORG = "iot_agriculture"
 BUCKET = "iot_bucket"
 MEASUREMENT = "measures_agribots"

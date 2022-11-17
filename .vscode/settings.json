@@ -5,5 +5,5 @@
     "azureFunctions.projectLanguage": "Python",
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",
-    "cSpell.words": ["Agri", "agribots", "waspmote"]
+    "cSpell.words": ["Agri", "agribots", "grafana", "waspmote"]
 }

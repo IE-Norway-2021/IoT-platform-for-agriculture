@@ -1,5 +1,5 @@
 function decodeUplink(input) {
-    // COnvert the inputs byte into a ASCII String
+    // Convert the inputs byte into a ASCII String
     var asciiString = String.fromCharCode.apply(null, input.bytes);
     // Split the string with # as a delimiter
     var splitString = asciiString.split("#");
