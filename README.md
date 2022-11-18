@@ -1,23 +1,25 @@
 # IoT-platform-for-agriculture. <!-- omit in toc -->
 
-Jade Gröli & David González León
+**Jade Gröli & David González León**
 
 ---
 
 - [1. Architecture](#1-architecture)
-- [2. Sensors used on the](#2-sensors-used-on-the)
-- [3. Development Steps](#3-development-steps)
-  - [3.1. Plug and Sense](#31-plug-and-sense)
-    - [3.1.1. Documentation](#311-documentation)
-  - [3.2. The Thing Network](#32-the-thing-network)
-  - [3.3. Azure](#33-azure)
-    - [3.3.1. Azure functions](#331-azure-functions)
-    - [3.3.2. InfluxDB Azure](#332-influxdb-azure)
-    - [3.3.3. Azure Managed Grafana](#333-azure-managed-grafana)
-- [4. Deployment](#4-deployment)
-  - [4.1. Deployement steps](#41-deployement-steps)
-- [5. Cost estimation](#5-cost-estimation)
-- [6. Repository of the project](#6-repository-of-the-project)
+- [2. Sensors used](#2-sensors-used)
+- [3. Setup](#3-setup)
+- [4. Development Steps](#4-development-steps)
+  - [4.1. Plug and Sense](#41-plug-and-sense)
+    - [4.1.1. Documentation](#411-documentation)
+  - [4.2. The Thing Network](#42-the-thing-network)
+  - [4.3. Azure](#43-azure)
+    - [4.3.1. Azure functions](#431-azure-functions)
+    - [4.3.2. InfluxDB Azure](#432-influxdb-azure)
+    - [4.3.3. Azure Managed Grafana](#433-azure-managed-grafana)
+- [5. Deployment](#5-deployment)
+  - [5.1. Deployement steps](#51-deployement-steps)
+  - [5.2. Result on the Grafana dashboard](#52-result-on-the-grafana-dashboard)
+- [6. Cost estimation](#6-cost-estimation)
+- [7. Repository of the project](#7-repository-of-the-project)
 
 # 1. Architecture
 
@@ -38,25 +40,35 @@ Jade Gröli & David González León
         -   Récupère les données de InfluxDB Azure
         -   Affiche les données du Module Plug & Sense
 
-# 2. Sensors used on the
+Le schéma de l'architecture est le suivant:
+
+![Architecture](./img/architecture.png)
+
+# 2. Sensors used
 
 -   Temp, humidity, pressure : port F
 -   Water sensor : port C
 -   Soil temp : port D
 
-# 3. Development Steps
+# 3. Setup
 
-## 3.1. Plug and Sense
+Voici notre montage :
+
+![Montage](./img/montage.jpg)
+
+# 4. Development Steps
+
+## 4.1. Plug and Sense
 
 Create the code for the Plug and Sense module to gather data from the sensors and send them to The Thing Network.
 
-### 3.1.1. Documentation
+### 4.1.1. Documentation
 
 Code example : https://development.libelium.com/plug-and-sense/code-examples
 
 Sensors sockets map : https://development.libelium.com/plug-and-sense-technical-guide/models
 
-## 3.2. The Thing Network
+## 4.2. The Thing Network
 
 At first we need to create the application and link the device to it
 
@@ -71,15 +83,15 @@ At first we need to create the application and link the device to it
 
 Once this is done, we receive the messages from the Plug and Sense module on The Thing Network. We now need to decode them. We setup a payload formatter function using a custom javascript function. This allows us to decode the messages and format them in a way that is easier to read and manipulate.
 
-## 3.3. Azure
+## 4.3. Azure
 
-### 3.3.1. Azure functions
+### 4.3.1. Azure functions
 
 We created a function in Azure that receives the payloads from The Thing Network through a http webhook and inserts the data into the InfluxDB database. The function is written in python using python version 3.9. We first developed the function locally and tested it on a local InfluxDB database. Once we were sure it worked, we deployed it to Azure. 
 
 To create the function in Azure we used the Azure VS code extension. The deployement is done using the same extension.
 
-### 3.3.2. InfluxDB Azure
+### 4.3.2. InfluxDB Azure
 
 To test the function, we used a local InfluxDB database. We used the following docker command to start the database :
 
@@ -212,7 +224,7 @@ This payload is an example of what the azure function receives from The Thing Ne
 
 We then tested using the web interface of the database to check if the data was correctly inserted.
 
-### 3.3.3. Azure Managed Grafana
+### 4.3.3. Azure Managed Grafana
 
 Once the database was correctly configured, we started working on the Grafana dashboard. We created a new Grafana instance using docker :
 
@@ -261,7 +273,7 @@ We adapted the query to get the correct field depending on the panel.
 
 Once all the panels were created, we saved the dashboard and exported it to a json file so that we could easily import it in the future.
 
-# 4. Deployment
+# 5. Deployment
 
 Nous avons déployé les 3 composants sur Azure :
 
@@ -273,7 +285,7 @@ Une fois les 3 composants déployés nous avons configuré InfluxDB et Grafana p
 
 Nous avons ensuite connecté TheThingNetwork au webhook de notre Azure function. Nous avons ensuite testé le fonctionnement de notre système en connectant le mote Plug and Sense. Nous avons pu voir que les données étaient bien reçues par TheThingNetwork et envoyées à notre Azure function. Nous avons ensuite pu voir que les données étaient bien insérées dans InfluxDB et que le dashboard Grafana était bien mis à jour.
 
-## 4.1. Deployement steps
+## 5.1. Deployement steps
 
 *  InfluxDB
 
@@ -323,7 +335,14 @@ Dans la catégorie "Enabled event types" on ne coche que l'option "Uplink messag
 On sauvegarde la configuration. Les messages sont maintenant redirigés vers la fonction Azure et le déploiement est terminé.
 
 
-# 5. Cost estimation
+##  5.2. Result on the Grafana dashboard
+
+Une fois le déploiement terminé et quelques données reçues, on observe le résultat suivant sur le dashboard Grafana :
+
+![dashboard](img/dashboard.png)
+
+
+# 6. Cost estimation
 
 Nous avons estimé les coûts du déploiement de la fonction et des instances de containers sur Azure. 
 
@@ -332,10 +351,10 @@ Nous avons estimé les coûts du déploiement de la fonction et des instances de
 
 La fonction ne coûte rien avant les 1 million d'exécutions. Nous avons estimé avoir 8064 exécutions par mois ce qui nous donne 10 ans avant de dépasser le quota gratuit.
 
-Cette estimation est calculé à l'aide de l'outil officel de calcul d'Azure : https://azure.microsoft.com/en-us/pricing/calculator/
+Cette estimation est calculé à l'aide de l'outil officiel de calcul d'Azure : https://azure.microsoft.com/en-us/pricing/calculator/
 
 
-# 6. Repository of the project
+# 7. Repository of the project
 
 The repository of the project is available here :
 
