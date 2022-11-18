@@ -15,8 +15,9 @@ Jade Gröli & David González León
     - [3.3.2. InfluxDB Azure](#332-influxdb-azure)
     - [3.3.3. Azure Managed Grafana](#333-azure-managed-grafana)
 - [4. Deployment](#4-deployment)
-- [Cost estimation](#cost-estimation)
-- [Repository of the project](#repository-of-the-project)
+  - [4.1. Deployement steps](#41-deployement-steps)
+- [5. Cost estimation](#5-cost-estimation)
+- [6. Repository of the project](#6-repository-of-the-project)
 
 # 1. Architecture
 
@@ -74,7 +75,9 @@ Once this is done, we receive the messages from the Plug and Sense module on The
 
 ### 3.3.1. Azure functions
 
-We created a function in Azure that receives the payloads from The Thing Network through a http webhook and inserts the data into the InfluxDB database. The function is written in python using python version 3.9. We first developed the function locally and tested it on a local InfluxDB database. Once we were sure it worked, we deployed it to Azure.
+We created a function in Azure that receives the payloads from The Thing Network through a http webhook and inserts the data into the InfluxDB database. The function is written in python using python version 3.9. We first developed the function locally and tested it on a local InfluxDB database. Once we were sure it worked, we deployed it to Azure. 
+
+To create the function in Azure we used the Azure VS code extension. The deployement is done using the same extension.
 
 ### 3.3.2. InfluxDB Azure
 
@@ -270,7 +273,57 @@ Une fois les 3 composants déployés nous avons configuré InfluxDB et Grafana p
 
 Nous avons ensuite connecté TheThingNetwork au webhook de notre Azure function. Nous avons ensuite testé le fonctionnement de notre système en connectant le mote Plug and Sense. Nous avons pu voir que les données étaient bien reçues par TheThingNetwork et envoyées à notre Azure function. Nous avons ensuite pu voir que les données étaient bien insérées dans InfluxDB et que le dashboard Grafana était bien mis à jour.
 
-# Cost estimation
+## 4.1. Deployement steps
+
+*  InfluxDB
+
+On crée un nouveau container au sein du groupe de ressources Azure. On lui fournit les informations suivantes : 
+
+![InfluxDB container creation](./img/container_influxdb_1.png)
+
+![InfluxDB container creation](./img/container_influxdb_2.png)
+
+Une fois le container deployé, on peut se connecter à l'interface web de InfluxDB en utilisant l'adresse IP du container et le port 8086. Une fois connecté, il faut configurer la base de données en créant une organisation et un bucket correspondant aux noms présents dans la fonction Azure (iot_agriculture et iot_bucket dans notre cas). Il faut ensuite créer un nouveau token pour donner les droits d'écriture à la fonction Azure et Grafana. On copie le token dans le champs dédié de la fonction Azure.
+
+*  Grafana
+
+On crée un nouveau container au sein du groupe de ressources Azure. On lui fournit les informations suivantes : 
+
+![Grafana container creation](./img/container_grafana_1.png)
+
+![Grafana container creation](./img/container_grafana_2.png)
+
+Une fois le container deployé, on peut se connecter à l'interface web de Grafana en utilisant l'adresse IP du container et le port 3000. On se connecte avec le compte admin/admin. On ajoute ensuite la source de données InfluxDB en utilisant les informations suivantes avec l'adresse IP du container InfluxDB :
+
+![Grafana datasource configuration](./img/grafana_config_1.jpg)
+
+![Grafana datasource configuration](./img/grafana_config_2.jpg)
+
+Une fois ceci effectué, on importe la dashboard à l'aide du fichier json fourni.
+
+
+*  Azure function
+
+Dans un premier temps, on vérifie que les informations sont bien complétées : token et URL. 
+
+On déploie ensuite la fonction en utilisant l'addon VS Code d'Azure. On vérifie ensuite que la fonction est bien active sur la dashboard Azure. On récupère ensuite l'URL de la fonction pour pouvoir configuer plus tard le webhook de The Things Network :
+
+![Azure function URL](./img/azure_function_url.png)
+
+* The Things Network
+
+On retourne sur l'application créée précédemment et on crée un webhook (Integrations->Webhooks) : 
+
+![webhook](img/webhook_config.png)
+
+
+Dans la catégorie "Enabled event types" on ne coche que l'option "Uplink message".
+
+
+On sauvegarde la configuration. Les messages sont maintenant redirigés vers la fonction Azure et le déploiement est terminé.
+
+
+# 5. Cost estimation
 
 Nous avons estimé les coûts du déploiement de la fonction et des instances de containers sur Azure. 
 
@@ -282,9 +335,8 @@ La fonction ne coûte rien avant les 1 million d'exécutions. Nous avons estimé
 Cette estimation est calculé à l'aide de l'outil officel de calcul d'Azure : https://azure.microsoft.com/en-us/pricing/calculator/
 
 
-# Repository of the project
+# 6. Repository of the project
 
 The repository of the project is available here :
 
 https://github.com/IE-Norway-2021/IoT-platform-for-agriculture.git
-
