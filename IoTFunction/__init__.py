@@ -6,6 +6,7 @@ from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 TOKEN = "INSERT YOUR TOKEN"
+# URL :  "http://<ip>:<port>"
 URL = "INSERT YOUR URL"
 ORG = "iot_agriculture"
 BUCKET = "iot_bucket"

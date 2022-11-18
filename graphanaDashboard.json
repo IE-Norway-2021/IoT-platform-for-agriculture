@@ -29,10 +29,7 @@
     "liveNow": false,
     "panels": [
         {
-            "datasource": {
-                "type": "influxdb",
-                "uid": "HZ_Dz-DVz"
-            },
+            "datasource": {},
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -143,10 +140,7 @@
             "type": "timeseries"
         },
         {
-            "datasource": {
-                "type": "influxdb",
-                "uid": "HZ_Dz-DVz"
-            },
+            "datasource": {},
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -245,10 +239,7 @@
             "type": "timeseries"
         },
         {
-            "datasource": {
-                "type": "influxdb",
-                "uid": "HZ_Dz-DVz"
-            },
+            "datasource": {},
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -347,10 +338,7 @@
             "type": "timeseries"
         },
         {
-            "datasource": {
-                "type": "influxdb",
-                "uid": "HZ_Dz-DVz"
-            },
+            "datasource": {},
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -451,10 +439,7 @@
             "type": "timeseries"
         },
         {
-            "datasource": {
-                "type": "influxdb",
-                "uid": "HZ_Dz-DVz"
-            },
+            "datasource": {},
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -543,7 +528,7 @@
                 {
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "HZ_Dz-DVz"
+                        "uid": "3krhjSdVk"
                     },
                     "query": "from(bucket: \"iot_bucket\")\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) =>\r\n    r._measurement == \"measures_agribots\" and\r\n    r._field == \"batteryLevel\" \r\n  )",
                     "refId": "A"
@@ -553,6 +538,7 @@
             "type": "timeseries"
         }
     ],
+    "refresh": "5s",
     "schemaVersion": 37,
     "style": "dark",
     "tags": [],
@@ -560,7 +546,7 @@
         "list": []
     },
     "time": {
-        "from": "now-6h",
+        "from": "now-15m",
         "to": "now"
     },
     "timepicker": {},
